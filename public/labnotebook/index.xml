@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Labnotebooks on Whippo Lab</title>
+    <link>/labnotebook/</link>
+    <description>Recent content in Labnotebooks on Whippo Lab</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Ross Whippo</copyright>
+    <lastBuildDate>Tue, 05 Dec 2017 00:00:00 +0000</lastBuildDate>
+    <atom:link href="/labnotebook/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Benthic Photo Processing for CoralNet</title>
+      <link>/labnotebook/2017/12/05/benthic-photo-processing-for-coralnet/</link>
+      <pubDate>Tue, 05 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/labnotebook/2017/12/05/benthic-photo-processing-for-coralnet/</guid>
+      <description>&lt;p&gt;This week I got back to processing the benthic photoquadrats from the 2017 MarineGEO Carrie Bow Cay field campaign. I reviewed the 2015 photos which we uploaded to &lt;a href=&#34;https://coralnet.ucsd.edu/&#34;&gt;CoralNet&lt;/a&gt; and saw that some of the photos were not color-corrected. I also double checked the cropping of the photos and found that most photos were cropped to a 54cm x 82cm estimated area covered, though some photos appear to be larger that that. I will need to investigate this further.&lt;/p&gt;
+&lt;p&gt;To process the 2017 photos from Carrie Bow Reef, House Reef, Carrie Bow Patch Reef, Curlew Patch Reef, South Reef, and Tobacco Reef I decided to standardized color correction using GIMP v2.8.18 following a protocol modified from the Script Fu provided at the bottom.&lt;/p&gt;
+&lt;p&gt;My manual process was:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Use the color correction tool Colors&amp;gt;Levels&amp;gt;Auto&lt;/li&gt;
+&lt;li&gt;Make 3 dupicates of the base image in layers (counted from the top 3,2,1,base)&lt;/li&gt;
+&lt;li&gt;Fill layer 2 with gray (HTML notation: #808080)&lt;/li&gt;
+&lt;li&gt;Change layer 3 mode to ‘Value’&lt;/li&gt;
+&lt;li&gt;Merge layer 3 down to layer 2&lt;/li&gt;
+&lt;li&gt;Create duplicate of new layer 2 (makes new layer 3)&lt;/li&gt;
+&lt;li&gt;Fill new layer 3 with red (HTML notation: #ff0000)&lt;/li&gt;
+&lt;li&gt;Change layer 3 mode to ‘Multiply’&lt;/li&gt;
+&lt;li&gt;Merge layer 3 down to layer 2&lt;/li&gt;
+&lt;li&gt;Change new layer 2 mode to ‘Screen’&lt;/li&gt;
+&lt;li&gt;Merge layer 2 down to layer 1&lt;/li&gt;
+&lt;li&gt;Change layer opacity to create a ‘neutral’ tone
+&lt;ul&gt;
+&lt;li&gt;Carrie Bow Reef = 80%&lt;/li&gt;
+&lt;li&gt;House Reef = 40%&lt;/li&gt;
+&lt;li&gt;Carrie Bow Patch Reef = 60%&lt;/li&gt;
+&lt;li&gt;Curlew Patch Reef = 20%&lt;/li&gt;
+&lt;li&gt;South Reef = 20%&lt;/li&gt;
+&lt;li&gt;Tobacco Reef = 20%&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Layers were flattened (right-click on layer in dialogue -&amp;gt; ‘Flatten Image’), and source file was overwritten.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Photos were then imported to ImageJ v1.48 and scale was set using transect tape in the image. Images too small to crop to 82cm x 54cm or with no visible scale in the image were not cropped and excluded from anlaysis.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;; med.scm version 2.4v2
+; 12 November 2007
+; A Script-Fu script to compensate for underwater colour loss
+; at greater than 5m
+; Modified to replace deprecated procedures, to work with GIMP 2.4
+
+; This program is free software; you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation; either version 2 of the License, or
+; (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+
+; You should have received a copy of the GNU General Public License
+; along with this program; if not, write to the Free Software
+; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+; Only tested on v2.4
+
+(define (script-fu-med img photo)
+
+    (gimp-image-undo-group-start img)
+
+    ;first copy of photo, set foreground to grey, fill with grey and set mode to color
+    (define uw-layer (car (gimp-layer-copy photo 1)))
+    (gimp-image-add-layer img uw-layer -1)
+    (gimp-drawable-set-name uw-layer &amp;quot;red enhance 2&amp;quot;)
+    (gimp-context-set-foreground &amp;#39;(128 128 128))
+    (gimp-edit-fill uw-layer 0)
+    (gimp-layer-set-mode uw-layer COLOR-MODE)
+
+    ;second copy of photo, set background to red, fill with red and set mode to multiply
+    (define uw1-layer (car (gimp-layer-copy photo 1)))
+    (gimp-image-add-layer img uw1-layer -1)
+    (gimp-drawable-set-name uw1-layer &amp;quot;red enhance 2a&amp;quot;)
+    (gimp-context-set-background &amp;#39;(255 0 0))
+    (gimp-edit-fill uw1-layer 1)
+    (gimp-layer-set-mode uw1-layer MULTIPLY-MODE)
+
+    ;merge down red to grey (clip-to-image) change mode to screen
+    (define uw-layer (car (gimp-image-merge-down img uw1-layer 1)))
+    (gimp-layer-set-mode uw-layer SCREEN-MODE)
+
+    ;set opacity to 50%, tweak up for deep (very green images) or down for shallow
+    (gimp-layer-set-opacity uw-layer 50)
+
+    ;clean
+    (gimp-image-undo-group-end img)
+    (gimp-displays-flush)
+)
+
+
+(script-fu-register &amp;quot;script-fu-med&amp;quot;
+        _&amp;quot;&amp;lt;Image&amp;gt;/Script-F_u/_Underwater Photos/Red Enhance _2&amp;quot;
+        &amp;quot;Based on the mandrake method for Photoshop. Translated to GIMP by meddler. See www.scubaboard.com for the original articles.&amp;quot;
+        &amp;quot;www.tankedup-imaging.com&amp;quot;
+        &amp;quot;Tanked Up Underwater Imaging&amp;quot;
+        &amp;quot;12 November 2007&amp;quot;
+        &amp;quot;&amp;quot;
+        SF-IMAGE &amp;quot;Image&amp;quot; 0
+        SF-DRAWABLE &amp;quot;Drawable&amp;quot; 0
+)&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
