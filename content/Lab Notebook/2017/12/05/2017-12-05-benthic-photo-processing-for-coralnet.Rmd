@@ -1,0 +1,109 @@
+---
+title: Benthic Photo Processing for CoralNet
+author: Ross Whippo
+date: '2017-12-05'
+categories:
+  - method
+tags:
+  - photo processing
+  - protocol
+  - MarineGEO
+slug: benthic-photo-processing-for-coralnet
+---
+
+This week I got back to processing the benthic photoquadrats from the 2017 MarineGEO Carrie Bow Cay field campaign. I reviewed the 2015 photos which we uploaded to [CoralNet](https://coralnet.ucsd.edu/) and saw that some of the photos were not color-corrected. I also double checked the cropping of the photos and found that most photos were cropped to a 54cm x 82cm estimated area covered, though some photos appear to be larger that that. I will need to investigate this further.
+
+To process the 2017 photos from Carrie Bow Reef, House Reef, Carrie Bow Patch Reef, Curlew Patch Reef, South Reef, and Tobacco Reef I decided to standardized color correction using GIMP v2.8.18 following a protocol modified from the Script Fu provided at the bottom.
+
+My manual process was:
+
+1. Use the color correction tool Colors>Levels>Auto
+2. Make 3 dupicates of the base image in layers (counted from the top 3,2,1,base)
+3. Fill layer 2 with gray (HTML notation: #808080)
+4. Change layer 3 mode to 'Value'
+5. Merge layer 3 down to layer 2
+6. Create duplicate of new layer 2 (makes new layer 3)
+7. Fill new layer 3 with red (HTML notation: #ff0000)
+8. Change layer 3 mode to 'Multiply'
+9. Merge layer 3 down to layer 2
+10. Change new layer 2 mode to 'Screen'
+11. Merge layer 2 down to layer 1
+12. Change layer opacity to create a 'neutral' tone 
+    + Carrie Bow Reef = 80%
+    + House Reef = 40%
+    + Carrie Bow Patch Reef = 60%
+    + Curlew Patch Reef = 20%
+    + South Reef = 20%
+    + Tobacco Reef = 20%
+13. Layers were flattened (right-click on layer in dialogue -> 'Flatten Image'), and source file was overwritten.
+    
+Photos were then imported to ImageJ v1.48 and scale was set using transect tape in the image. Images too small to crop to 82cm x 54cm or with no visible scale in the image were not cropped and excluded from anlaysis.
+    
+
+```{r, eval = FALSE}
+; med.scm version 2.4v2
+; 12 November 2007
+; A Script-Fu script to compensate for underwater colour loss
+; at greater than 5m
+; Modified to replace deprecated procedures, to work with GIMP 2.4
+
+; This program is free software; you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation; either version 2 of the License, or
+; (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+
+; You should have received a copy of the GNU General Public License
+; along with this program; if not, write to the Free Software
+; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+; Only tested on v2.4
+
+(define (script-fu-med img photo)
+
+	(gimp-image-undo-group-start img)
+
+	;first copy of photo, set foreground to grey, fill with grey and set mode to color
+	(define uw-layer (car (gimp-layer-copy photo 1)))
+	(gimp-image-add-layer img uw-layer -1)
+	(gimp-drawable-set-name uw-layer "red enhance 2")
+	(gimp-context-set-foreground '(128 128 128))
+	(gimp-edit-fill uw-layer 0)
+	(gimp-layer-set-mode uw-layer COLOR-MODE)
+
+	;second copy of photo, set background to red, fill with red and set mode to multiply
+	(define uw1-layer (car (gimp-layer-copy photo 1)))
+	(gimp-image-add-layer img uw1-layer -1)
+	(gimp-drawable-set-name uw1-layer "red enhance 2a")
+	(gimp-context-set-background '(255 0 0))
+	(gimp-edit-fill uw1-layer 1)
+	(gimp-layer-set-mode uw1-layer MULTIPLY-MODE)
+
+	;merge down red to grey (clip-to-image) change mode to screen
+	(define uw-layer (car (gimp-image-merge-down img uw1-layer 1)))
+	(gimp-layer-set-mode uw-layer SCREEN-MODE)
+
+	;set opacity to 50%, tweak up for deep (very green images) or down for shallow
+	(gimp-layer-set-opacity uw-layer 50)
+
+	;clean
+	(gimp-image-undo-group-end img)
+	(gimp-displays-flush)
+)
+
+
+(script-fu-register "script-fu-med"
+		_"<Image>/Script-F_u/_Underwater Photos/Red Enhance _2"
+		"Based on the mandrake method for Photoshop. Translated to GIMP by meddler. See www.scubaboard.com for the original articles."
+		"www.tankedup-imaging.com"
+		"Tanked Up Underwater Imaging"
+		"12 November 2007"
+		""
+		SF-IMAGE "Image" 0
+		SF-DRAWABLE "Drawable" 0
+)
+```
