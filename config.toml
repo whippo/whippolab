@@ -233,17 +233,17 @@ defaultContentLanguageInSubdir = false
 
 [[menu.main]]
   name = "Home"
-  url = "#about"
+  url = "/about/"
   weight = 1
 
 [[menu.main]]
   name = "Publications"
-  url = "#publications_selected"
+  url = "/publications_selected/"
   weight = 2
 
 [[menu.main]]
   name = "Projects"
-  url = "#projects"
+  url = "/projects/"
   weight = 4
 
 [[menu.main]]
@@ -253,7 +253,7 @@ defaultContentLanguageInSubdir = false
 
 [[menu.main]]
   name = "Contact"
-  url = "#contact"
+  url = "/contact/"
   weight = 6
 
 # Taxonomies.
