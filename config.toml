@@ -7,6 +7,7 @@ footnotereturnlinkcontents = "<sup>^</sup>"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 preserveTaxonomyNames = true
 paginate = 10
+enableGitInfo = true
 
 # Enable comments by entering your Disqus shortname
 disqusShortname = ""
@@ -144,6 +145,11 @@ defaultContentLanguageInSubdir = false
   #   (relative to /static/css and /static/js respectively)
   custom_css = []
   custom_js  = []
+  
+    github =  "whippo"
+    repo = "whippolab"
+    branch = "master"
+
 
   # Publication types.
   #   Used to categorize publications.
@@ -183,6 +189,7 @@ defaultContentLanguageInSubdir = false
     #   2 = APA
     #   3 = MLA
     publication_format = 3
+    
 
   # Social/Academic Networking
   #
@@ -221,6 +228,8 @@ defaultContentLanguageInSubdir = false
     icon = "github"
     icon_pack = "fa"
     link = "//github.com/whippo"
+    
+    
 
 
 # Navigation Links
