@@ -1,0 +1,21 @@
+---
+title: Benthic Photo 2016 Color Processing
+author: Ross Whippo
+date: '2017-12-11'
+slug: benthic-photo-2016-color-processing
+categories:
+  - method
+tags:
+  - photo processing
+  - MarineGEO
+---
+
+I've started going through the 2016 benthic photos from Carrie Bow and have refined the color-correction process that I was using on previous photos analysed for 2017 [here](http://www.whippolab.com/labnotebook/2017/12/05/benthic-photo-processing-for-coralnet/). I used the same methods and got through CBC 30 Central, but I added a color-correction step after I applied the red filter. I also changed the opacity of the red layer independently for each photo (I used the same opacity for all pictures within a site previously.) The results were much better and I was able to remove some of the magenta (though not all.) 
+<br><br>
+
+<img src ="https://farm5.staticflickr.com/4691/25116878018_23d0db0d8c_b.jpg" width = "612" alt = "Color corrected benthos" </>
+
+Photo from CBC 30 Central in 2016 before (left), and after (right) color correction.
+<br><br>
+
+Next I will attempt to crop the photos to 82cm x 54cm. The CBC 30 Central photos that I color-corrected were from separate surveys conducted by CCRE. The MarineGEO photos often lacked scale or weren't big enough for pre-processing.
